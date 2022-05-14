@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TournamentManagerAPI.Data.Entities;
 
 namespace TournamentManagerAPI.Data
 {

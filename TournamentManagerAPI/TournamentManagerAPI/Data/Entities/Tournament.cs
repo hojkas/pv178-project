@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TournamentManagerAPI.Data
+namespace TournamentManagerAPI.Data.Entities
 {
     internal sealed class Tournament
     {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TournamentManagerAPI.Data
+namespace TournamentManagerAPI.Data.Entities
 {
     internal sealed class Player
     {
