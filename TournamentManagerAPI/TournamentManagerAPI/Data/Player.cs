@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TournamentManagerAPI.Data
 {
@@ -15,8 +16,12 @@ namespace TournamentManagerAPI.Data
         [MaxLength(1000)]
         public string Note { get; set; } = string.Empty;
 
+        [Required]
         public Tournament? Tournament { get; set; }
-        public IList<Match> Matches { get; set; } = new List<Match>();
-        public IList<Match> MatchesWon { get; set; } = new List<Match>();
+
+        [InverseProperty("Players")]
+        public ICollection<Match> Matches { get; set; } = new List<Match>();
+        [InverseProperty("Winner")]
+        public ICollection<Match> MatchesWon { get; set; } = new List<Match>();
     }
 }

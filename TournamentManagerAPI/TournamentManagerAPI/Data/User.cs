@@ -14,5 +14,7 @@ namespace TournamentManagerAPI.Data
         public byte[]? PasswordHash { get; set; }
         public byte[]? PasswordSalt { get; set; }
         public DateTime DateJoined { get; set; }
+
+        public ICollection<Tournament> Tournaments { get; set; } = new List<Tournament>();
     }
 }

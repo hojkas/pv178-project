@@ -20,8 +20,10 @@ namespace TournamentManagerAPI.Data
         public bool IsPublic { get; set; } = false;
         public string ShareLInk { get; set; } = string.Empty;
 
+        [Required]
         public User? User { get; set; }
-        public IList<Match> Matches { get; set; } = new List<Match>();
-        public IList<Player> Players { get; set; } = new List<Player>();
+
+        public ICollection<Match> Matches { get; set; } = new List<Match>();
+        public ICollection<Player> Players { get; set; } = new List<Player>();
     }
 }

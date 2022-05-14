@@ -17,8 +17,10 @@ namespace TournamentManagerAPI.Data
         public string Score { get; set; } = string.Empty;
         public bool IsFinished { get; set; } = false;
         
+        [Required]
         public Tournament? Tournament { get; set; }
-        public Player[] Players { get; set; } = new Player[2];
+
+        public ICollection<Player> Players { get; set; } = new List<Player>();
         public Player? Winner { get; set; }
     }
 }
