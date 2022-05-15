@@ -21,9 +21,9 @@ namespace TournamentManagerAPI.Controllers
         }
 
         [HttpGet(Name = "GetPlayers")]
-        public IEnumerable<Player> Get()
+        public async Task<IEnumerable<Player>> Get()
         {
-            return PlayerRepository.GetPlayersAsync();
+            return await PlayerRepository.GetPlayersAsync();
         }
     }
 }
