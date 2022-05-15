@@ -2,7 +2,7 @@
 
 namespace TournamentManagerAPI.Data.Entities
 {
-    internal sealed class User
+    public sealed class User
     {
         [Key]
         public int Id { get; set; }

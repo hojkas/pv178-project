@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using TournamentManagerAPI.Data.Entities;
+using TournamentManagerAPI.Data.Repositories;
 
 namespace TournamentManagerAPI.Controllers
 {
@@ -18,16 +20,10 @@ namespace TournamentManagerAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet(Name = "GetPlayers")]
+        public IEnumerable<Player> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return PlayerRepository.GetPlayersAsync();
         }
     }
 }

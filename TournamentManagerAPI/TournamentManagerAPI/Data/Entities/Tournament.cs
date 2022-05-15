@@ -2,7 +2,7 @@
 
 namespace TournamentManagerAPI.Data.Entities
 {
-    internal sealed class Tournament
+    public sealed class Tournament
     {
         [Key]
         public int Id { get; set; }
@@ -12,13 +12,13 @@ namespace TournamentManagerAPI.Data.Entities
         public string Name { get; set; } = string.Empty;
 
         [MaxLength(1000)]
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
 
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public bool IsPublic { get; set; } = false;
-        public string ShareLInk { get; set; } = string.Empty;
+        public string? ShareLink { get; set; }
 
         [Required]
         public User? User { get; set; }

@@ -3,18 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TournamentManagerAPI.Data.Entities
 {
-    internal sealed class Player
+    public sealed class Player
     {
         [Key]
         public int Id { get; set; }
 
+        [Required]
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
-        [MaxLength(100)]
-        public string Nickname { get; set; } = string.Empty;
 
         [MaxLength(1000)]
-        public string Note { get; set; } = string.Empty;
+        public string? Note { get; set; }
 
         [Required]
         public Tournament? Tournament { get; set; }

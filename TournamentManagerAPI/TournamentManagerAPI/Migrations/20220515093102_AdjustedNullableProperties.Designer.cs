@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TournamentManagerAPI.Data;
 
@@ -10,9 +11,10 @@ using TournamentManagerAPI.Data;
 namespace TournamentManagerAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220515093102_AdjustedNullableProperties")]
+    partial class AdjustedNullableProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -50,6 +52,7 @@ namespace TournamentManagerAPI.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("Start")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TournamentId")
