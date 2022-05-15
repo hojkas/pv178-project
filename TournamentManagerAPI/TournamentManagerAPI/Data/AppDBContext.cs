@@ -3,7 +3,7 @@ using TournamentManagerAPI.Data.Entities;
 
 namespace TournamentManagerAPI
 {
-    internal sealed class AppDBContext : DbContext
+    public sealed class AppDBContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Tournament> Tournaments { get; set; } = null!;
