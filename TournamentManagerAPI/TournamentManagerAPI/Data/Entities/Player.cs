@@ -16,6 +16,7 @@ namespace TournamentManagerAPI.Data.Entities
         public string? Note { get; set; }
 
         [Required]
+        public int TournamentId { get; set; }
         public Tournament? Tournament { get; set; }
 
         [InverseProperty("Players")]

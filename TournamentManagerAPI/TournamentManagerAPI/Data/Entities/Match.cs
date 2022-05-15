@@ -17,9 +17,12 @@ namespace TournamentManagerAPI.Data.Entities
         public bool IsFinished { get; set; } = false;
         
         [Required]
+        public int TournamentId { get; set; }
         public Tournament? Tournament { get; set; }
 
         public ICollection<Player> Players { get; set; } = new List<Player>();
+
+        public int? WinnerId { get; set; }
         public Player? Winner { get; set; }
     }
 }

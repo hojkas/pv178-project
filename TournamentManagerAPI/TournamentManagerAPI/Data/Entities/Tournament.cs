@@ -21,6 +21,7 @@ namespace TournamentManagerAPI.Data.Entities
         public string? ShareLink { get; set; }
 
         [Required]
+        public int UserId { get; set; }
         public User? User { get; set; }
 
         public ICollection<Match> Matches { get; set; } = new List<Match>();
