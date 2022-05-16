@@ -26,10 +26,10 @@ namespace TournamentManagerAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Match>>> GetMatches()
         {
-          if (_context.Matches == null)
-          {
-              return NotFound();
-          }
+            if (_context.Matches == null)
+            {
+                return NotFound();
+            }
             return await _context.Matches.ToListAsync();
         }
 

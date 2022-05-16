@@ -36,10 +36,10 @@ namespace TournamentManagerAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Tournament>> GetTournament(int id)
         {
-          if (_context.Tournaments == null)
-          {
-              return NotFound();
-          }
+            if (_context.Tournaments == null)
+            {
+                return NotFound();
+            }
             var tournament = await _context.Tournaments.FindAsync(id);
 
             if (tournament == null)
@@ -48,6 +48,34 @@ namespace TournamentManagerAPI.Controllers
             }
 
             return tournament;
+        }
+
+        // GET: api/Tournaments/5/Players
+        [HttpGet("{id}/Players")]
+        public async Task<ActionResult<IEnumerable<Player>>> GetTournamentPlayers(int id)
+        {
+            if (_context.Players == null)
+            {
+                return NotFound();
+            }
+            return await _context.Players
+                .Where(p => p.TournamentId == id)
+                .ToListAsync();
+        }
+
+        // GET: api/Tournaments/5/Matches
+        [HttpGet("{id}/Matches")]
+        public async Task<ActionResult<IEnumerable<Match>>> GetTournamentMatches(int id)
+        {
+            if (_context.Matches == null)
+            {
+                return NotFound();
+            }
+            return await _context.Matches
+                .Where(m => m.TournamentId == id)
+                .Include(m => m.Players)
+                .Include(m => m.Winner)
+                .ToListAsync();
         }
 
         // PUT: api/Tournaments/5
