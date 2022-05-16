@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TournamentManagerAPI.Data.Entities
 {
@@ -18,6 +19,7 @@ namespace TournamentManagerAPI.Data.Entities
         
         [Required]
         public int TournamentId { get; set; }
+        [JsonIgnore]
         public Tournament? Tournament { get; set; }
 
         public ICollection<Player> Players { get; set; } = new List<Player>();
