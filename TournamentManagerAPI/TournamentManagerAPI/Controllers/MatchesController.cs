@@ -21,27 +21,18 @@ namespace TournamentManagerAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Matches
-        // TODO remove, only use matches in tournament
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Match>>> GetMatches()
+        // GET: api/Matches/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Match>> GetMatch(int id)
         {
             if (_context.Matches == null)
             {
                 return NotFound();
             }
-            return await _context.Matches.ToListAsync();
-        }
-
-        // GET: api/Matches/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Match>> GetMatch(int id)
-        {
-          if (_context.Matches == null)
-          {
-              return NotFound();
-          }
-            var match = await _context.Matches.FindAsync(id);
+            var match = await _context.Matches
+                .Include(m => m.Players)
+                .Include(m => m.Winner)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (match == null)
             {
@@ -87,10 +78,10 @@ namespace TournamentManagerAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Match>> PostMatch(Match match)
         {
-          if (_context.Matches == null)
-          {
-              return Problem("Entity set 'AppDBContext.Matches'  is null.");
-          }
+            if (_context.Matches == null)
+            {
+                return Problem("Entity set 'AppDBContext.Matches'  is null.");
+            }
             _context.Matches.Add(match);
             await _context.SaveChangesAsync();
 

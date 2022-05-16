@@ -22,6 +22,7 @@ namespace TournamentManagerAPI.Controllers
         }
 
         // GET: api/Tournaments
+        // TODO remove when user
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tournament>>> GetTournaments()
         {
@@ -114,10 +115,11 @@ namespace TournamentManagerAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Tournament>> PostTournament(Tournament tournament)
         {
-          if (_context.Tournaments == null)
-          {
-              return Problem("Entity set 'AppDBContext.Tournaments'  is null.");
-          }
+            if (_context.Tournaments == null)
+            {
+                return Problem("Entity set 'AppDBContext.Tournaments'  is null.");
+            }
+            tournament.ShareLink = Guid.NewGuid().ToString();
             _context.Tournaments.Add(tournament);
             await _context.SaveChangesAsync();
 
