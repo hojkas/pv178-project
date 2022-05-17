@@ -22,7 +22,6 @@ namespace TournamentManagerAPI.Controllers
         }
 
         // GET: api/Tournaments
-        // TODO remove when user
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tournament>>> GetTournaments()
         {
@@ -75,6 +74,9 @@ namespace TournamentManagerAPI.Controllers
             return await _context.Matches
                 .Where(m => m.TournamentId == id)
                 .Include(m => m.Players)
+                .ThenInclude(p => p.Player)
+                .Include(m => m.Players)
+                .ThenInclude(p => p.Match)
                 .Include(m => m.Winner)
                 .ToListAsync();
         }

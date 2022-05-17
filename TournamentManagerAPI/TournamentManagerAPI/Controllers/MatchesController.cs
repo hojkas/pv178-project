@@ -31,6 +31,9 @@ namespace TournamentManagerAPI.Controllers
             }
             var match = await _context.Matches
                 .Include(m => m.Players)
+                .ThenInclude(p => p.Player)
+                .Include(m => m.Players)
+                .ThenInclude(p => p.Match)
                 .Include(m => m.Winner)
                 .FirstOrDefaultAsync(m => m.Id == id);
 

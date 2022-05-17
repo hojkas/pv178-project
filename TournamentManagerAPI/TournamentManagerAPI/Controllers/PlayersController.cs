@@ -54,8 +54,14 @@ namespace TournamentManagerAPI.Controllers
                 return NotFound();
             }
             var match = await _context.Matches
-                .Where(m => m.PlayerIsInMatch(id))
+                .AsNoTracking()
+                .Where(m => 
+                    m.Players.Any(p => p.IsPlayer && p.Player != null && p.Player.Id == id)
+                )
                 .Include(m => m.Players)
+                .ThenInclude(p => p.Player)
+                .Include(m => m.Players)
+                .ThenInclude(p => p.Match)
                 .Include(m => m.Winner)
                 .ToListAsync();
 

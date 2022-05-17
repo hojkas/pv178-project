@@ -17,6 +17,10 @@ namespace TournamentManagerAPI.Data.Entities
 
         public int OriginalMatchId { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("Players")]
+        public Match? OriginalMatch { get; set; }
+
         public void UpdateAfterResolvedMatch()
         {
             if (IsPlayer || Match == null)
