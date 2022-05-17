@@ -19,12 +19,20 @@ namespace TournamentManagerAPI.Data.Entities
         
         [Required]
         public int TournamentId { get; set; }
-        [JsonIgnore]
-        public Tournament? Tournament { get; set; }
 
-        public ICollection<Player> Players { get; set; } = new List<Player>();
+        public List<PlayerOrMatchResult> Players { get; set; } = new();
 
         public int? WinnerId { get; set; }
         public Player? Winner { get; set; }
+
+        public bool PlayerIsInMatch(int id)
+        {
+            foreach(var player in Players)
+            {
+                if (player.IsPlayer && player.Player != null && player.Player.Id == id)
+                    return true;
+            }
+            return false;
+        }
     }
 }
