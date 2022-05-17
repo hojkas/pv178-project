@@ -119,7 +119,6 @@ namespace TournamentManagerAPI.Controllers
             {
                 return Problem("Entity set 'AppDBContext.Tournaments'  is null.");
             }
-            tournament.ShareLink = Guid.NewGuid().ToString();
             _context.Tournaments.Add(tournament);
             await _context.SaveChangesAsync();
 

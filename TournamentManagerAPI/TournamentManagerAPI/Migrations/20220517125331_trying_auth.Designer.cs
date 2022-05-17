@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TournamentManagerAPI;
 
@@ -10,9 +11,10 @@ using TournamentManagerAPI;
 namespace TournamentManagerAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220517125331_trying_auth")]
+    partial class trying_auth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -105,17 +107,47 @@ namespace TournamentManagerAPI.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ShareLink")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tournaments");
+                });
+
+            modelBuilder.Entity("TournamentManagerAPI.Data.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateJoined")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tournaments");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MatchPlayer", b =>
@@ -161,6 +193,17 @@ namespace TournamentManagerAPI.Migrations
                     b.Navigation("Tournament");
                 });
 
+            modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Tournament", b =>
+                {
+                    b.HasOne("TournamentManagerAPI.Data.Entities.User", "User")
+                        .WithMany("Tournaments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Player", b =>
                 {
                     b.Navigation("MatchesWon");
@@ -171,6 +214,11 @@ namespace TournamentManagerAPI.Migrations
                     b.Navigation("Matches");
 
                     b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("TournamentManagerAPI.Data.Entities.User", b =>
+                {
+                    b.Navigation("Tournaments");
                 });
 #pragma warning restore 612, 618
         }
