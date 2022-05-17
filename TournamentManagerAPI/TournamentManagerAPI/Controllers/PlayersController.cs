@@ -56,7 +56,7 @@ namespace TournamentManagerAPI.Controllers
             var match = await _context.Matches
                 .AsNoTracking()
                 .Where(m => 
-                    m.Players.Any(p => p.IsPlayer && p.Player != null && p.Player.Id == id)
+                    m.Players.Any(p => !p.IsEmpty && p.IsPlayer && p.Player != null && p.Player.Id == id)
                 )
                 .Include(m => m.Players)
                 .ThenInclude(p => p.Player)
