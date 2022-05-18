@@ -24,8 +24,6 @@ namespace TournamentManagerAPI.Controllers
         // Empties the playerOrMatchResult
         internal async Task EmptyPlayerOrMatchResult(int id)
         {
-            Match? match = null;
-
             var pomr = await _context.PlayerOrMatchResults
                 .Include(p => p.Match)
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -45,7 +43,6 @@ namespace TournamentManagerAPI.Controllers
                 pomr.Match = null;
                 pomr.IsEmpty = true;
                 _context.Entry(pomr).State = EntityState.Modified;
-                if (match != null) _context.Entry(match).State = EntityState.Modified;
 
                 try
                 {
@@ -59,7 +56,6 @@ namespace TournamentManagerAPI.Controllers
         }
 
         // GET: api/PlayerOrMatchResults/5
-        // TODO delete only for debug
         [HttpGet("{id}")]
         public async Task<ActionResult<PlayerOrMatchResult>> GetPlayerOrMatchResult(int id)
         {
@@ -114,38 +110,40 @@ namespace TournamentManagerAPI.Controllers
 
         // POST: api/PlayerOrMatchResults
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<PlayerOrMatchResult>> PostPlayerOrMatchResult(PlayerOrMatchResult playerOrMatchResult)
-        {
-          if (_context.PlayerOrMatchResults == null)
-          {
-              return Problem("Entity set 'AppDBContext.PlayerOrMatchResults'  is null.");
-          }
-            _context.PlayerOrMatchResults.Add(playerOrMatchResult);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPlayerOrMatchResult", new { id = playerOrMatchResult.Id }, playerOrMatchResult);
-        }
+        // TODO remove completely
+        // [HttpPost]
+        // public async Task<ActionResult<PlayerOrMatchResult>> PostPlayerOrMatchResult(PlayerOrMatchResult playerOrMatchResult)
+        // {
+        //   if (_context.PlayerOrMatchResults == null)
+        //   {
+        //       return Problem("Entity set 'AppDBContext.PlayerOrMatchResults'  is null.");
+        //   }
+        //     _context.PlayerOrMatchResults.Add(playerOrMatchResult);
+        //     await _context.SaveChangesAsync();
+        // 
+        //     return CreatedAtAction("GetPlayerOrMatchResult", new { id = playerOrMatchResult.Id }, playerOrMatchResult);
+        // }
 
         // DELETE: api/PlayerOrMatchResults/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlayerOrMatchResult(int id)
-        {
-            if (_context.PlayerOrMatchResults == null)
-            {
-                return NotFound();
-            }
-            var playerOrMatchResult = await _context.PlayerOrMatchResults.FindAsync(id);
-            if (playerOrMatchResult == null)
-            {
-                return NotFound();
-            }
-
-            _context.PlayerOrMatchResults.Remove(playerOrMatchResult);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
+        // TODO remove commpletely
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> DeletePlayerOrMatchResult(int id)
+        // {
+        //     if (_context.PlayerOrMatchResults == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //     var playerOrMatchResult = await _context.PlayerOrMatchResults.FindAsync(id);
+        //     if (playerOrMatchResult == null)
+        //     {
+        //         return NotFound();
+        //     }
+        // 
+        //     _context.PlayerOrMatchResults.Remove(playerOrMatchResult);
+        //     await _context.SaveChangesAsync();
+        // 
+        //     return NoContent();
+        // }
 
         private bool PlayerOrMatchResultExists(int id)
         {
