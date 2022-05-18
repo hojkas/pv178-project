@@ -15,10 +15,12 @@ namespace TournamentManagerAPI.Controllers
     public class MatchesController : ControllerBase
     {
         private readonly AppDBContext _context;
+        private readonly PlayerOrMatchResultsController _pomrController;
 
         public MatchesController(AppDBContext context)
         {
             _context = context;
+            _pomrController = new PlayerOrMatchResultsController(context);
         }
 
         // GET: api/Matches/5
@@ -149,19 +151,11 @@ namespace TournamentManagerAPI.Controllers
             
             match.WinnerId = null;
             match.Winner = null;
-            // foreach(var pomr in match.Players)
-            // {
-            //     pomr.PlayerId = null;
-            //     pomr.Player = null;
-            //     pomr.MatchId = null;
-            //     pomr.Match = null;
-            //     pomr.OriginalMatch = null;
-            //     _context.PlayerOrMatchResults.Remove(pomr);
-            // }
-            // match.Players.Clear();
-            // 
-            // match = new Match() { Id = match.Id };
-            //await DeleteAllPlayersOrMatchResultsWithOriginMatch(id);
+
+            foreach(var pomr in match.Players)
+            {
+                if (!pomr.IsEmpty) await _pomrController.EmptyPlayerOrMatchResult(pomr.Id);
+            }
             _context.Matches.Remove(match);
             await _context.SaveChangesAsync();
 
