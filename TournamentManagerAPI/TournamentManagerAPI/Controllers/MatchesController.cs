@@ -85,6 +85,25 @@ namespace TournamentManagerAPI.Controllers
             {
                 return Problem("Entity set 'AppDBContext.Matches'  is null.");
             }
+
+            if(match.Players.Count > 2)
+            {
+                return BadRequest("Match cannot have more than 2 players");
+            } 
+
+            // add empty POMR (player or match result) to fill matches players
+            if(match.Players.Count < 2)
+            {
+                while(match.Players.Count < 2)
+                {
+                    match.Players.Add(new PlayerOrMatchResult()
+                    {
+                        IsEmpty = true,
+                        OriginalMatchId = match.Id
+                    });
+                }
+            }
+
             _context.Matches.Add(match);
             await _context.SaveChangesAsync();
 

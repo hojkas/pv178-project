@@ -81,6 +81,24 @@ namespace TournamentManagerAPI.Controllers
                 .ToListAsync();
         }
 
+        [HttpGet("{id}/IncompleteMatches")]
+        public async Task<ActionResult<IEnumerable<Match>>> GetTournamentIncompleteMatches(int id)
+        {
+            if (_context.Matches == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Matches
+                .Where(m => m.TournamentId == id)
+                .Where(m => m.Players.Count != 2 || m.Players.Any(p => 
+                    p.IsEmpty ||
+                    p.IsPlayer && p.Player == null ||
+                    !p.IsPlayer && p.Match == null
+                ))
+                .ToListAsync();
+        }
+
         // PUT: api/Tournaments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
