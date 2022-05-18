@@ -15,18 +15,6 @@ namespace TournamentManagerAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Players
-        // TODO only temporary, delete later
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Player>>> GetPlayers()
-        {
-            if (_context.Players == null)
-            {
-                return NotFound();
-            }
-            return await _context.Players.ToListAsync();
-        }
-
         // GET: api/Players/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Player>> GetPlayer(int id)
@@ -54,8 +42,13 @@ namespace TournamentManagerAPI.Controllers
                 return NotFound();
             }
             var match = await _context.Matches
-                .Where(m => m.Players.Select(p => p.Id).Contains(id))
+                .Where(m => 
+                    m.Players.Any(p => !p.IsEmpty && p.IsPlayer && p.Player != null && p.Player.Id == id)
+                )
                 .Include(m => m.Players)
+                .ThenInclude(p => p.Player)
+                .Include(m => m.Players)
+                .ThenInclude(p => p.Match)
                 .Include(m => m.Winner)
                 .ToListAsync();
 
@@ -125,6 +118,10 @@ namespace TournamentManagerAPI.Controllers
             if (player == null)
             {
                 return NotFound();
+            }
+
+            if ((await GetPlayerMatches(id)).Value?.Count() > 0) {
+                return BadRequest("Cannot delete player when they are in existing match.");
             }
 
             _context.Players.Remove(player);

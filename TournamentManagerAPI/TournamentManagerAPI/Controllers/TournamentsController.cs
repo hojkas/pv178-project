@@ -22,7 +22,6 @@ namespace TournamentManagerAPI.Controllers
         }
 
         // GET: api/Tournaments
-        // TODO remove when user
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tournament>>> GetTournaments()
         {
@@ -75,7 +74,28 @@ namespace TournamentManagerAPI.Controllers
             return await _context.Matches
                 .Where(m => m.TournamentId == id)
                 .Include(m => m.Players)
+                .ThenInclude(p => p.Player)
+                .Include(m => m.Players)
+                .ThenInclude(p => p.Match)
                 .Include(m => m.Winner)
+                .ToListAsync();
+        }
+
+        [HttpGet("{id}/IncompleteMatches")]
+        public async Task<ActionResult<IEnumerable<Match>>> GetTournamentIncompleteMatches(int id)
+        {
+            if (_context.Matches == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Matches
+                .Where(m => m.TournamentId == id)
+                .Where(m => m.Players.Count != 2 || m.Players.Any(p => 
+                    p.IsEmpty ||
+                    p.IsPlayer && p.Player == null ||
+                    !p.IsPlayer && p.Match == null
+                ))
                 .ToListAsync();
         }
 
@@ -119,7 +139,6 @@ namespace TournamentManagerAPI.Controllers
             {
                 return Problem("Entity set 'AppDBContext.Tournaments'  is null.");
             }
-            tournament.ShareLink = Guid.NewGuid().ToString();
             _context.Tournaments.Add(tournament);
             await _context.SaveChangesAsync();
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TournamentManagerAPI;
 
@@ -10,9 +11,10 @@ using TournamentManagerAPI;
 namespace TournamentManagerAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220518093923_AddedMatchInverseProperty")]
+    partial class AddedMatchInverseProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -26,6 +28,9 @@ namespace TournamentManagerAPI.Migrations
                     b.Property<bool>("IsFinished")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("MatchRequiringResultId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
@@ -33,9 +38,6 @@ namespace TournamentManagerAPI.Migrations
                     b.Property<string>("Note")
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("PlayerRequiringResultId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Score")
                         .HasMaxLength(100)
@@ -52,7 +54,7 @@ namespace TournamentManagerAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlayerRequiringResultId")
+                    b.HasIndex("MatchRequiringResultId")
                         .IsUnique();
 
                     b.HasIndex("TournamentId");
@@ -114,7 +116,7 @@ namespace TournamentManagerAPI.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayerOrMatchResults");
+                    b.ToTable("PlayerOrMatchResult");
                 });
 
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Tournament", b =>
@@ -145,9 +147,9 @@ namespace TournamentManagerAPI.Migrations
 
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Match", b =>
                 {
-                    b.HasOne("TournamentManagerAPI.Data.Entities.PlayerOrMatchResult", "PlayerRequiringResult")
+                    b.HasOne("TournamentManagerAPI.Data.Entities.PlayerOrMatchResult", "MatchRequiringResult")
                         .WithOne("Match")
-                        .HasForeignKey("TournamentManagerAPI.Data.Entities.Match", "PlayerRequiringResultId");
+                        .HasForeignKey("TournamentManagerAPI.Data.Entities.Match", "MatchRequiringResultId");
 
                     b.HasOne("TournamentManagerAPI.Data.Entities.Tournament", null)
                         .WithMany("Matches")
@@ -159,7 +161,7 @@ namespace TournamentManagerAPI.Migrations
                         .WithMany()
                         .HasForeignKey("WinnerId");
 
-                    b.Navigation("PlayerRequiringResult");
+                    b.Navigation("MatchRequiringResult");
 
                     b.Navigation("Winner");
                 });

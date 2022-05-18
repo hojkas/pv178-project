@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace TournamentManagerAPI.Data.Entities
@@ -10,6 +11,9 @@ namespace TournamentManagerAPI.Data.Entities
 
         public DateTime? Start { get; set; }
 
+        [MaxLength(100)]
+        public string? Name { get; set; } = string.Empty;
+
         [MaxLength(1000)]
         public string? Note { get; set; } = string.Empty;
 
@@ -19,12 +23,17 @@ namespace TournamentManagerAPI.Data.Entities
         
         [Required]
         public int TournamentId { get; set; }
-        [JsonIgnore]
-        public Tournament? Tournament { get; set; }
 
-        public ICollection<Player> Players { get; set; } = new List<Player>();
+        [InverseProperty("OriginalMatch")]
+        public List<PlayerOrMatchResult> Players { get; set; } = new();
 
         public int? WinnerId { get; set; }
         public Player? Winner { get; set; }
+
+        [ForeignKey("PlayerRequiringResult")]
+        public int? PlayerRequiringResultId { get; set; }
+        [JsonIgnore]
+        [InverseProperty("Match")]
+        public PlayerOrMatchResult? PlayerRequiringResult { get; set; }
     }
 }

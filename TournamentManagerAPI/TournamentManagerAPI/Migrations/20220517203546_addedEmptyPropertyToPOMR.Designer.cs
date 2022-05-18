@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TournamentManagerAPI;
 
@@ -10,9 +11,10 @@ using TournamentManagerAPI;
 namespace TournamentManagerAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220517203546_addedEmptyPropertyToPOMR")]
+    partial class addedEmptyPropertyToPOMR
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -34,9 +36,6 @@ namespace TournamentManagerAPI.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PlayerRequiringResultId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Score")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
@@ -51,9 +50,6 @@ namespace TournamentManagerAPI.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PlayerRequiringResultId")
-                        .IsUnique();
 
                     b.HasIndex("TournamentId");
 
@@ -110,11 +106,13 @@ namespace TournamentManagerAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MatchId");
+
                     b.HasIndex("OriginalMatchId");
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayerOrMatchResults");
+                    b.ToTable("PlayerOrMatchResult");
                 });
 
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Tournament", b =>
@@ -145,10 +143,6 @@ namespace TournamentManagerAPI.Migrations
 
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Match", b =>
                 {
-                    b.HasOne("TournamentManagerAPI.Data.Entities.PlayerOrMatchResult", "PlayerRequiringResult")
-                        .WithOne("Match")
-                        .HasForeignKey("TournamentManagerAPI.Data.Entities.Match", "PlayerRequiringResultId");
-
                     b.HasOne("TournamentManagerAPI.Data.Entities.Tournament", null)
                         .WithMany("Matches")
                         .HasForeignKey("TournamentId")
@@ -158,8 +152,6 @@ namespace TournamentManagerAPI.Migrations
                     b.HasOne("TournamentManagerAPI.Data.Entities.Player", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId");
-
-                    b.Navigation("PlayerRequiringResult");
 
                     b.Navigation("Winner");
                 });
@@ -177,6 +169,10 @@ namespace TournamentManagerAPI.Migrations
 
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.PlayerOrMatchResult", b =>
                 {
+                    b.HasOne("TournamentManagerAPI.Data.Entities.Match", "Match")
+                        .WithMany()
+                        .HasForeignKey("MatchId");
+
                     b.HasOne("TournamentManagerAPI.Data.Entities.Match", "OriginalMatch")
                         .WithMany("Players")
                         .HasForeignKey("OriginalMatchId")
@@ -187,6 +183,8 @@ namespace TournamentManagerAPI.Migrations
                         .WithMany()
                         .HasForeignKey("PlayerId");
 
+                    b.Navigation("Match");
+
                     b.Navigation("OriginalMatch");
 
                     b.Navigation("Player");
@@ -195,11 +193,6 @@ namespace TournamentManagerAPI.Migrations
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Match", b =>
                 {
                     b.Navigation("Players");
-                });
-
-            modelBuilder.Entity("TournamentManagerAPI.Data.Entities.PlayerOrMatchResult", b =>
-                {
-                    b.Navigation("Match");
                 });
 
             modelBuilder.Entity("TournamentManagerAPI.Data.Entities.Tournament", b =>

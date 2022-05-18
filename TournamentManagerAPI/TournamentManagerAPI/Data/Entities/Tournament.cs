@@ -18,14 +18,6 @@ namespace TournamentManagerAPI.Data.Entities
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        public bool IsPublic { get; set; } = false;
-        public string? ShareLink { get; set; }
-
-        [Required]
-        public int UserId { get; set; }
-        [JsonIgnore]
-        public User? User { get; set; }
-
         [JsonIgnore]
         public ICollection<Match> Matches { get; set; } = new List<Match>();
         [JsonIgnore]
