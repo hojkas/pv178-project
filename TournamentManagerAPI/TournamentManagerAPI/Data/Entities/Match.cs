@@ -29,5 +29,11 @@ namespace TournamentManagerAPI.Data.Entities
 
         public int? WinnerId { get; set; }
         public Player? Winner { get; set; }
+
+        [ForeignKey("MatchRequiringResult")]
+        public int? MatchRequiringResultId { get; set; }
+        [JsonIgnore]
+        [InverseProperty("Match")]
+        public PlayerOrMatchResult? MatchRequiringResult { get; set; }
     }
 }

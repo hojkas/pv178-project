@@ -15,6 +15,7 @@ namespace TournamentManagerAPI.Data.Entities
         public Player? Player { get; set; }
 
         public int? MatchId { get; set; }
+        [InverseProperty("MatchRequiringResult")]
         public Match? Match { get; set; }
 
         public int OriginalMatchId { get; set; }
@@ -22,17 +23,5 @@ namespace TournamentManagerAPI.Data.Entities
         [JsonIgnore]
         [InverseProperty("Players")]
         public Match? OriginalMatch { get; set; }
-
-        public void UpdateAfterResolvedMatch()
-        {
-            if (IsEmpty || IsPlayer || Match == null)
-                throw new InvalidOperationException("Cannot update when match isn't configured");
-            if (!Match.IsFinished || Match.Winner == null || Match.WinnerId == null)
-                throw new InvalidOperationException("Cannot update when match isn't resolved");
-
-            IsPlayer = true;
-            PlayerId = Match.WinnerId;
-            Player = Match.Winner;
-        }
     }
 }
