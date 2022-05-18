@@ -156,6 +156,7 @@ namespace TournamentManagerAPI.Controllers
             {
                 if (!pomr.IsEmpty) await _pomrController.EmptyPlayerOrMatchResult(pomr.Id);
             }
+
             _context.Matches.Remove(match);
             await _context.SaveChangesAsync();
 

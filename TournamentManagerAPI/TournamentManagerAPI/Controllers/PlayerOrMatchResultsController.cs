@@ -24,7 +24,11 @@ namespace TournamentManagerAPI.Controllers
         // Empties the playerOrMatchResult
         internal async Task EmptyPlayerOrMatchResult(int id)
         {
-            var pomr = (await GetPlayerOrMatchResult(id)).Value;
+            Match? match = null;
+
+            var pomr = await _context.PlayerOrMatchResults
+                .Include(p => p.Match)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (pomr != null && !pomr.IsEmpty)
             {
                 pomr.IsPlayer = true;
@@ -35,12 +39,13 @@ namespace TournamentManagerAPI.Controllers
                 if (pomr.Match != null)
                 {
                     pomr.Match.PlayerRequiringResult = null;
-                    _context.Entry(pomr.Match).State = EntityState.Modified;
+                    _context.Matches.Update(pomr.Match);
                 }
 
                 pomr.Match = null;
                 pomr.IsEmpty = true;
                 _context.Entry(pomr).State = EntityState.Modified;
+                if (match != null) _context.Entry(match).State = EntityState.Modified;
 
                 try
                 {
@@ -62,7 +67,11 @@ namespace TournamentManagerAPI.Controllers
           {
               return NotFound();
           }
-            var playerOrMatchResult = await _context.PlayerOrMatchResults.FindAsync(id);
+            var playerOrMatchResult = await _context.PlayerOrMatchResults
+                .Include(p => p.Match)
+                .Include(p => p.OriginalMatch)
+                .Include(p => p.Player)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (playerOrMatchResult == null)
             {
