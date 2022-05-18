@@ -45,6 +45,27 @@ namespace TournamentManagerAPI.Controllers
             return match;
         }
 
+        // GET: api/Matches/5/MatchesRequiringResult
+        [HttpGet("{id}/MatchesRequiringResult")]
+        public async Task<ActionResult<IEnumerable<Match>>> GetMatchesRequiringResult(int id)
+        {
+            if (_context.Matches == null)
+            {
+                return NotFound();
+            }
+
+            var matches = await _context.Matches
+                .Where(m => m.Players
+                    .Any(p => !p.IsEmpty && !p.IsPlayer && p.MatchId != null && p.MatchId == id))
+                .ToListAsync();
+
+            if (matches == null)
+            {
+                return NotFound();
+            }
+
+            return matches;
+        }
         // PUT: api/Matches/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
