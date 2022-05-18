@@ -45,27 +45,6 @@ namespace TournamentManagerAPI.Controllers
             return match;
         }
 
-        // GET: api/Matches/5/MatchesRequiringResult
-        [HttpGet("{id}/MatchesRequiringResult")]
-        public async Task<ActionResult<IEnumerable<Match>>> GetMatchesRequiringResult(int id)
-        {
-            if (_context.Matches == null)
-            {
-                return NotFound();
-            }
-
-            var matches = await _context.Matches
-                .Where(m => m.Players
-                    .Any(p => !p.IsEmpty && !p.IsPlayer && p.MatchId != null && p.MatchId == id))
-                .ToListAsync();
-
-            if (matches == null)
-            {
-                return NotFound();
-            }
-
-            return matches;
-        }
         // PUT: api/Matches/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -74,6 +53,20 @@ namespace TournamentManagerAPI.Controllers
             if (id != match.Id)
             {
                 return BadRequest();
+            }
+
+            if (match.WinnerId != null && match.PlayerRequiringResultId != null)
+            {
+                // if result was put in, updates dependent player match
+                var pomr = await _context.PlayerOrMatchResults.FindAsync((int)match.PlayerRequiringResultId);
+                if (pomr != null && !pomr.IsEmpty && !pomr.IsPlayer)
+                {
+                    pomr.IsPlayer = true;
+                    pomr.PlayerId = match.WinnerId;
+                    pomr.MatchId = null;
+                    match.PlayerRequiringResultId = null;
+                    _context.Entry(pomr).State = EntityState.Modified;
+                }
             }
 
             _context.Entry(match).State = EntityState.Modified;
@@ -139,16 +132,47 @@ namespace TournamentManagerAPI.Controllers
             {
                 return NotFound();
             }
-            var match = await _context.Matches.FindAsync(id);
+            var match = await _context.Matches
+                .Where(m => m.Id == id)
+                .Include(m => m.Players)
+                .FirstOrDefaultAsync();
+
             if (match == null)
             {
                 return NotFound();
             }
-
+            
+            if (match.PlayerRequiringResultId != null)
+            {
+                return BadRequest("Cannot delete match when its result is to be used by another match.");
+            }
+            
+            match.WinnerId = null;
+            match.Winner = null;
+            // foreach(var pomr in match.Players)
+            // {
+            //     pomr.PlayerId = null;
+            //     pomr.Player = null;
+            //     pomr.MatchId = null;
+            //     pomr.Match = null;
+            //     pomr.OriginalMatch = null;
+            //     _context.PlayerOrMatchResults.Remove(pomr);
+            // }
+            // match.Players.Clear();
+            // 
+            // match = new Match() { Id = match.Id };
+            //await DeleteAllPlayersOrMatchResultsWithOriginMatch(id);
             _context.Matches.Remove(match);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private async Task DeleteAllPlayersOrMatchResultsWithOriginMatch(int id)
+        {
+            var players = await _context.PlayerOrMatchResults.Where(p => p.OriginalMatchId == id).ToListAsync();
+            foreach (var player in players) _context.PlayerOrMatchResults.Remove(player);
+            await _context.SaveChangesAsync();
         }
 
         private bool MatchExists(int id)

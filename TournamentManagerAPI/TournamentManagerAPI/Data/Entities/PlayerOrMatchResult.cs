@@ -15,7 +15,7 @@ namespace TournamentManagerAPI.Data.Entities
         public Player? Player { get; set; }
 
         public int? MatchId { get; set; }
-        [InverseProperty("MatchRequiringResult")]
+        [InverseProperty("PlayerRequiringResult")]
         public Match? Match { get; set; }
 
         public int OriginalMatchId { get; set; }
