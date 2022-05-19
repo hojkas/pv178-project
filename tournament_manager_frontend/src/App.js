@@ -64,10 +64,19 @@ export default function App() {
   function setNewTournament(tournament) {
     SetTournament(tournament);
     SetTournamentPlayers([]);
+    SetTournamentMatches([]);
+    SetShowTournamentInfo(false);
+  }
+
+  // POMR = Player or match result
+  function getPOMRName(pomr) {
+    if(pomr.isPlayer && pomr.player != null) return pomr.player.name;
+    if(!pomr.isPlayer && pomr.match != null) return ("Winner of '" + pomr.match.name + "'");
+    return "[empty]";
   }
 
   return (
-    <div className="App md:container md:mx-auto mt-5 mb-5 px-5">
+    <div className="App md:container md:mx-auto my-5 px-5">
       <h1 className="text-3xl font-bold text-blue-800">
         My very not scuffed Tournament Manager
       </h1>
@@ -106,7 +115,6 @@ export default function App() {
         <table className="tournament-table simple-table">
           <thead>
             <tr>
-              <th scope="col">Id</th>
               <th scope="col">Name</th>
               <th scope="col">Description</th>
               <th scope="col"></th>
@@ -115,7 +123,6 @@ export default function App() {
           <tbody>
             {tournaments.map((tournament) => (
               <tr key={tournament.id}>
-                <th scope="row">{tournament.id}</th>
                 <td>{tournament.name}</td>
                 <td>{tournament.description}</td>
                 <td>
@@ -136,7 +143,7 @@ export default function App() {
           Tournament info <FontAwesomeIcon icon={faAngleUp}/>
         </div>
         <div>Id: {selectedTournament.id}</div>
-        <div>{selectedTournament.name}</div>
+        <div className="text-blue-bold">{selectedTournament.name}</div>
         <div>{selectedTournament.description}</div>
         
         <div>
@@ -179,7 +186,6 @@ export default function App() {
           <table className="tournament-table simple-table">
             <thead>
               <tr>
-                <th scope="col">Id</th>
                 <th scope="col">Name</th>
                 <th scope="col">Note</th>
               </tr>
@@ -187,7 +193,6 @@ export default function App() {
             <tbody>
               {tournamentPlayers.map((player) => (
                 <tr key={player.id}>
-                  <th scope="row">{player.id}</th>
                   <td>{player.name}</td>
                   <td>{player.note}</td>
                 </tr>
@@ -216,15 +221,35 @@ export default function App() {
           <table className="tournament-table simple-table">
             <thead>
               <tr>
-                <th scope="col">Id</th>
                 <th scope="col">Name</th>
-                <th scope="col">Note</th>
+                <th scope="col">Players</th>
+                <th scope="col">Start</th>
+                <th scope="col">Score</th>
+                <th scope="col">Winner</th>
               </tr>
             </thead>
             <tbody>
               {tournamentMatches.map((match) => (
                 <tr key={match.id}>
-                  <th scope="row">{match.id}</th>
+                  <td>{match.name}</td>
+                  <td>
+                    <inline className="text-blue-bold">{getPOMRName(match.players[0])}</inline>{/*
+                    */} vs {/*
+                    */}<inline className="text-blue-bold">{getPOMRName(match.players[1])}</inline>
+                  </td>
+                  <td>
+                    {match.start != null ? format(new Date(match.start)) :
+                      <div className="text-center">-</div>}
+                  </td>
+                  <td>
+                    {match.score != null ? match.score :
+                      <div className="text-center">-</div>}
+                  </td>
+                  <td>
+                    {match.winner != null ?
+                      <div className="text-blue-bold">{match.winner.name}</div> :
+                      <div className="text-center">-</div>}
+                  </td>
                 </tr>
               ))}
             </tbody>

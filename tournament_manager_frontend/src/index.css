@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.text-blue-bold {
+    @apply font-bold text-blue-800
+}
+
 .header2 {
     @apply font-bold text-lg text-blue-800
 }
@@ -15,7 +19,7 @@
 }
 
 .btn-small {
-    @apply rounded px-2;
+    @apply rounded my-1 px-2;
 }
 
 .btn-blue {
