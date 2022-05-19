@@ -8,7 +8,9 @@ import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'
 export default function App() {
   const [tournaments, SetTournaments] = useState([]);
   const [selectedTournament, SetTournament] = useState();
+  const [showTournamentInfo, SetShowTournamentInfo] = useState();
   const [tournamentPlayers, SetTournamentPlayers] = useState([]);
+  const [tournamentMatches, SetTournamentMatches] = useState([]);
 
 
   function getTournaments() {
@@ -43,13 +45,29 @@ export default function App() {
     });
   }
 
+  function getTournamentMatches() {
+    const url = API_BASE_URL + "Tournaments/" + selectedTournament.id + '/Matches';
+    fetch(url, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(matchesFromServer => {
+      console.log(matchesFromServer);
+      SetTournamentMatches(matchesFromServer);
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
+  }
+
   function setNewTournament(tournament) {
     SetTournament(tournament);
     SetTournamentPlayers([]);
   }
 
   return (
-    <div className="App md:container md:mx-auto mt-5 px-5">
+    <div className="App md:container md:mx-auto mt-5 mb-5 px-5">
       <h1 className="text-3xl font-bold text-blue-800">
         My very not scuffed Tournament Manager
       </h1>
@@ -58,10 +76,9 @@ export default function App() {
       {tournaments.length > 0 && renderTournamentsManipulationButton()}
       {tournaments.length > 0 && renderTournamentsTable()}
 
-      {selectedTournament != null &&
-        renderTounament() &&
-        renderTournamentPlayersDiv()
-      }
+      {selectedTournament != null && renderTounament()}
+      {selectedTournament != null && renderTournamentPlayersDiv()}
+      {selectedTournament != null && renderPlainMatchesDiv()}
 
     </div>
   );
@@ -113,9 +130,11 @@ export default function App() {
   }
 
   function renderTounament() {
-    return (
+    if (showTournamentInfo) return (
       <div className="mt-5">
-        <div className="header2">Tournament info</div>
+        <div className="header2 clickable" onClick={() => SetShowTournamentInfo(false)}>
+          Tournament info <FontAwesomeIcon icon={faAngleUp}/>
+        </div>
         <div>Id: {selectedTournament.id}</div>
         <div>{selectedTournament.name}</div>
         <div>{selectedTournament.description}</div>
@@ -134,16 +153,25 @@ export default function App() {
         </div>
       </div>
     )
+    else return (
+      <div className="mt-5">
+        <div className="header2 clickable" onClick={() => SetShowTournamentInfo(true)}>
+          Tournament info <FontAwesomeIcon icon={faAngleDown}/>
+        </div>
+      </div>
+    )
   }
 
   function renderTournamentPlayersDiv() {
     if(tournamentPlayers.length == 0) return (
-      <div className="header2 clickable" onClick={getTournamentPlayers}>
-        Players <FontAwesomeIcon icon={faAngleDown}/>
+      <div className="mt-5">
+        <div className="header2 clickable" onClick={getTournamentPlayers}>
+          Players <FontAwesomeIcon icon={faAngleDown}/>
+        </div>
       </div>
     )
     else return (
-      <div>
+      <div className="mt-5">
         <div className="header2 clickable" onClick={() => SetTournamentPlayers([])}>
           Players <FontAwesomeIcon icon={faAngleUp}/>
         </div>
@@ -162,6 +190,41 @@ export default function App() {
                   <th scope="row">{player.id}</th>
                   <td>{player.name}</td>
                   <td>{player.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
+  function renderPlainMatchesDiv() {
+    if(tournamentMatches.length == 0) return (
+      <div className="mt-5">
+        <div className="header2 clickable" onClick={getTournamentMatches}>
+          Matches list <FontAwesomeIcon icon={faAngleDown}/>
+        </div>
+      </div>
+    )
+    else return (
+      <div className="mt-5">
+        <div className="header2 clickable" onClick={() => SetTournamentMatches([])}>
+          Matches list <FontAwesomeIcon icon={faAngleUp}/>
+        </div>
+        <div>
+          <table className="tournament-table simple-table">
+            <thead>
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tournamentMatches.map((match) => (
+                <tr key={match.id}>
+                  <th scope="row">{match.id}</th>
                 </tr>
               ))}
             </tbody>
