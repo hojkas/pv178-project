@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { API_BASE_URL } from "./utilities/constants";
 import { format } from "date-fns";
+import ReactTooltip from 'react-tooltip';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'
@@ -76,19 +77,20 @@ export default function App() {
   }
 
   return (
-    <div className="App md:container md:mx-auto my-5 px-5">
-      <h1 className="text-3xl font-bold text-blue-800">
-        My very not scuffed Tournament Manager
-      </h1>
+    <div>
+      <div className="App md:container md:mx-auto my-5 px-5">
+        <h1 className="text-3xl font-bold text-blue-800">
+          My very not scuffed Tournament Manager
+        </h1>
 
-      {tournaments.length === 0 && renderLoadTournamentsButton()}
-      {tournaments.length > 0 && renderTournamentsManipulationButton()}
-      {tournaments.length > 0 && renderTournamentsTable()}
+        {tournaments.length === 0 && renderLoadTournamentsButton()}
+        {tournaments.length > 0 && renderTournamentsManipulationButton()}
+        {tournaments.length > 0 && renderTournamentsTable()}
 
-      {selectedTournament != null && renderTounament()}
-      {selectedTournament != null && renderTournamentPlayersDiv()}
-      {selectedTournament != null && renderPlainMatchesDiv()}
-
+        {selectedTournament != null && renderTounament()}
+        {selectedTournament != null && renderTournamentPlayersDiv()}
+        {selectedTournament != null && renderPlainMatchesDiv()}
+      </div>
     </div>
   );
 
