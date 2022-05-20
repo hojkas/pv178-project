@@ -10,6 +10,28 @@
     @apply font-bold text-lg text-blue-800
 }
 
+.interactive-match {
+    height: 300px;
+}
+
+.match-table {
+    @apply w-3/4 justify-center text-center
+}
+
+.match-info {
+    min-height: 50px;
+    @apply bg-blue-200 rounded w-4/5 mt-2 outline
+}
+
+.match-info-selected {
+    @apply bg-blue-400
+}
+
+.match-info-empty {
+    min-height: 50px;
+    @apply bg-transparent outline-none w-4/5 mt-2
+}
+
 .clickable:hover {
     @apply cursor-pointer
 }
