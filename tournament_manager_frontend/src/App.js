@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "./utilities/constants";
 import { format } from "date-fns";
-import ReactTooltip from 'react-tooltip';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleUp, faArrowsRotate } from '@fortawesome/free-solid-svg-icons'
@@ -343,6 +342,11 @@ export default function App() {
           <table className="match-table table-fixed">
             <tbody>
               <tr>
+                <td className="font-bold">Previous matches</td>
+                <td className="font-bold">This match</td>
+                <td className="font-bold">Following match</td>
+              </tr>
+              <tr>
                 <td>
                   {selectedMatch.players[0].isEmpty || selectedMatch.players[0].isPlayer ?
                     <div className="match-info-empty"></div> :
@@ -352,7 +356,12 @@ export default function App() {
                           {getPOMRName(selectedMatch.players[0])}</div> }
                 </td>
                 <td rowSpan={2}>
-                  <div className="match-info match-info-selected font-bold">{selectedMatch.name}</div>
+                  <div className="match-info match-info-selected">
+                    <div className="font-bold">{selectedMatch.name}</div>
+                    <span>{getPOMRName(selectedMatch.players[0])}</span>{/*
+                            */} vs {/*
+                            */}<span>{getPOMRName(selectedMatch.players[1])}</span>
+                  </div>
                 </td>
                 <td rowSpan={2}>
                   {matchRequiringSelectedMatch == null ?
@@ -360,7 +369,8 @@ export default function App() {
                       <div className="match-info font-bold" onClick={
                         () => { getMatchDetail(matchRequiringSelectedMatch.id);
                           getRequiringMatchFromMATCH(matchRequiringSelectedMatch.id)}}>
-                            {matchRequiringSelectedMatch.name}</div> }
+                            <div>{matchRequiringSelectedMatch.name}</div>
+                      </div> }
                 </td>
               </tr>
               <tr>

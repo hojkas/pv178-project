@@ -20,7 +20,7 @@
 
 .match-info {
     min-height: 50px;
-    @apply bg-blue-200 rounded w-4/5 mt-2 outline
+    @apply bg-blue-200 rounded mx-1 mt-2 outline
 }
 
 .match-info-selected {
