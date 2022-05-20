@@ -95,7 +95,23 @@ export default function App() {
     });
   }
 
-  function getRequiringMatch(pomrId) {
+  function getRequiringMatch(matchId) {
+    const url = API_BASE_URL + 'Matches/' + matchId;
+    fetch(url, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(matchFromServer => {
+      console.log(matchFromServer);
+      SetMatchRequiringSelectedMatch(matchFromServer);
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
+  }
+
+  function getRequiringMatchFromPOMR(pomrId) {
     const url = API_BASE_URL + 'PlayerOrMatchResults/' + pomrId;
     if (pomrId == null) SetMatchRequiringSelectedMatch();
     else {
@@ -105,13 +121,29 @@ export default function App() {
       .then(response => response.json())
       .then(pomrFromServer => {
         console.log(pomrFromServer);
-        SetMatchRequiringSelectedMatch(pomrFromServer.match);
+        getRequiringMatch(pomrFromServer.originalMatchId);
       })
       .catch((error) => {
         console.log(error);
         alert(error);
       });
     }
+  }
+
+  function getRequiringMatchFromMATCH(matchId) {
+    const url = API_BASE_URL + 'Matches/' + matchId;
+    fetch(url, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(matchFromServer => {
+      console.log(matchFromServer);
+      getRequiringMatchFromPOMR(matchFromServer.playerRequiringResultId);
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
   }
 
   function setNewTournament(tournament) {
@@ -272,7 +304,7 @@ export default function App() {
             </thead>
             <tbody>
               {tournamentMatches.map((match) => (
-                <tr key={match.id} onClick={() => { getMatchDetail(match.id); getRequiringMatch(match.playerRequiringResultId); }}>
+                <tr key={match.id} onClick={() => { getMatchDetail(match.id); getRequiringMatchFromPOMR(match.playerRequiringResultId); }}>
                   <td>{match.name}</td>
                   <td>
                     <span className="text-blue-bold">{getPOMRName(match.players[0])}</span>{/*
@@ -309,28 +341,39 @@ export default function App() {
         <div>Click on the connected match to show its connections instead.</div>
         <div>
           <table className="match-table table-fixed">
-            <tr>
-              <td>
-                 {selectedMatch.players[0].isEmpty || selectedMatch.players[0].isPlayer ?
-                  <div className="match-info-empty"></div> :
-                  <div className="match-info font-bold clickable" onClick={() => getMatchDetail(selectedMatch.players[0].matchId)}>{getPOMRName(selectedMatch.players[0])}</div> }
-              </td>
-              <td rowSpan={2}>
-                <div className="match-info match-info-selected font-bold">{selectedMatch.name}</div>
-              </td>
-              <td rowSpan={2}>
-                {matchRequiringSelectedMatch == null ?
+            <tbody>
+              <tr>
+                <td>
+                  {selectedMatch.players[0].isEmpty || selectedMatch.players[0].isPlayer ?
                     <div className="match-info-empty"></div> :
-                    <div className="match-info font-bold" onClick={() => getMatchDetail(matchRequiringSelectedMatch.id)}>{matchRequiringSelectedMatch.name}</div> }
-              </td>
-            </tr>
-            <tr>
-              <td>
-              {selectedMatch.players[1].isEmpty || selectedMatch.players[1].isPlayer ?
-                  <div className="match-info-empty"></div> :
-                  <div className="match-info font-bold clickable" onClick={() => getMatchDetail(selectedMatch.players[1].matchId)}>{getPOMRName(selectedMatch.players[1])}</div> }
-              </td>
-            </tr>
+                    <div className="match-info font-bold clickable" onClick={
+                      () => { getMatchDetail(selectedMatch.players[0].matchId);
+                        SetMatchRequiringSelectedMatch(selectedMatch) }}>
+                          {getPOMRName(selectedMatch.players[0])}</div> }
+                </td>
+                <td rowSpan={2}>
+                  <div className="match-info match-info-selected font-bold">{selectedMatch.name}</div>
+                </td>
+                <td rowSpan={2}>
+                  {matchRequiringSelectedMatch == null ?
+                      <div className="match-info-empty"></div> :
+                      <div className="match-info font-bold" onClick={
+                        () => { getMatchDetail(matchRequiringSelectedMatch.id);
+                          getRequiringMatchFromMATCH(matchRequiringSelectedMatch.id)}}>
+                            {matchRequiringSelectedMatch.name}</div> }
+                </td>
+              </tr>
+              <tr>
+                <td>
+                {selectedMatch.players[1].isEmpty || selectedMatch.players[1].isPlayer ?
+                    <div className="match-info-empty"></div> :
+                    <div className="match-info font-bold clickable" onClick={
+                        () => { getMatchDetail(selectedMatch.players[1].matchId);
+                          SetMatchRequiringSelectedMatch(selectedMatch) }}>
+                            {getPOMRName(selectedMatch.players[1])}</div> }
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
