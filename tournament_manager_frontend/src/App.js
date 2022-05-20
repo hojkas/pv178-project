@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "./utilities/constants";
 import { format } from "date-fns";
 import ReactTooltip from 'react-tooltip';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'
+import { faAngleDown, faAngleUp, faArrowsRotate } from '@fortawesome/free-solid-svg-icons'
 
 export default function App() {
   const [tournaments, SetTournaments] = useState([]);
@@ -13,9 +13,22 @@ export default function App() {
   const [tournamentPlayers, SetTournamentPlayers] = useState([]);
   const [tournamentMatches, SetTournamentMatches] = useState([]);
 
+  const [selectedMatch, SetSelectedMatch] = useState();
+  const [matchRequiringSelectedMatch, SetMatchRequiringSelectedMatch] = useState();
+
+
+  useEffect(() => {
+    getTournaments();
+  }, []);
 
   function getTournaments() {
     const url = API_BASE_URL + "Tournaments";
+    SetTournament();
+    SetTournamentPlayers([]);
+    SetTournamentMatches([]);
+    SetShowTournamentInfo(true);
+    SetSelectedMatch();
+    SetMatchRequiringSelectedMatch();
     fetch(url, {
       method: 'GET'
     })
@@ -28,6 +41,10 @@ export default function App() {
       console.log(error);
       alert(error);
     });
+  }
+
+  function formatDate(stringDate) {
+    return format(new Date(stringDate), "dd.MM.yyyy H:mm");
   }
 
   function getTournamentPlayers() {
@@ -62,11 +79,48 @@ export default function App() {
     });
   }
 
+  function getMatchDetail(matchId) {
+    const url = API_BASE_URL + 'Matches/' + matchId;
+    fetch(url, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(matchFromServer => {
+      console.log(matchFromServer);
+      SetSelectedMatch(matchFromServer);
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
+  }
+
+  function getRequiringMatch(pomrId) {
+    const url = API_BASE_URL + 'PlayerOrMatchResults/' + pomrId;
+    if(pomrId == null) SetMatchRequiringSelectedMatch();
+    else {
+      fetch(url, {
+        method: 'GET'
+      })
+      .then(response => response.json())
+      .then(pomrFromServer => {
+        console.log(pomrFromServer);
+        SetMatchRequiringSelectedMatch(pomrFromServer.Match);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+    }
+  }
+
   function setNewTournament(tournament) {
     SetTournament(tournament);
     SetTournamentPlayers([]);
     SetTournamentMatches([]);
-    SetShowTournamentInfo(false);
+    SetShowTournamentInfo(true);
+    SetSelectedMatch();
+    SetMatchRequiringSelectedMatch();
   }
 
   // POMR = Player or match result
@@ -76,39 +130,22 @@ export default function App() {
     return "[empty]";
   }
 
+  // APP BODY
   return (
     <div>
       <div className="App md:container md:mx-auto my-5 px-5">
         <h1 className="text-3xl font-bold text-blue-800">
-          My very not scuffed Tournament Manager
+          Tournament Manager - Data View <span className="clickable" onClick={getTournaments}><FontAwesomeIcon icon={faArrowsRotate}/></span>
         </h1>
-
-        {tournaments.length === 0 && renderLoadTournamentsButton()}
-        {tournaments.length > 0 && renderTournamentsManipulationButton()}
-        {tournaments.length > 0 && renderTournamentsTable()}
+        
+        {tournaments.length > 0 ? renderTournamentsTable() : <div>No tournaments found...</div>}
 
         {selectedTournament != null && renderTounament()}
         {selectedTournament != null && renderTournamentPlayersDiv()}
-        {selectedTournament != null && renderPlainMatchesDiv()}
+        {selectedTournament != null && renderMatchesDiv()}
       </div>
     </div>
   );
-
-  function renderLoadTournamentsButton() {
-    return (
-      <div className="mt-5">
-        <button onClick={getTournaments} className="btn btn-blue">Load Tournaments</button>
-      </div>
-    );
-  }
-
-  function renderTournamentsManipulationButton() {
-    return (
-      <div className="mt-5">
-        <button onClick={getTournaments} className="btn btn-blue">Reload Tournaments</button>
-      </div>
-    );
-  }
 
   function renderTournamentsTable() {
     return (
@@ -151,13 +188,13 @@ export default function App() {
         <div>
           Start time:&nbsp;
             {selectedTournament.startDate ?
-            format(new Date(selectedTournament.startDate), "dd.MM.yyyy H:mm") :
+            formatDate(selectedTournament.startDate) :
             "No date given"}
         </div>
         <div>
           End time:&nbsp;
             {selectedTournament.endDate ?
-            format(new Date(selectedTournament.endDate), "dd.MM.yyyy H:mm") :
+            formatDate(selectedTournament.endDate) :
             "No date given"}
         </div>
       </div>
@@ -206,18 +243,21 @@ export default function App() {
     )
   }
 
-  function renderPlainMatchesDiv() {
+  function renderMatchesDiv() {
     if(tournamentMatches.length == 0) return (
       <div className="mt-5">
         <div className="header2 clickable" onClick={getTournamentMatches}>
-          Matches list <FontAwesomeIcon icon={faAngleDown}/>
+          Matches <FontAwesomeIcon icon={faAngleDown}/>
         </div>
       </div>
     )
     else return (
       <div className="mt-5">
         <div className="header2 clickable" onClick={() => SetTournamentMatches([])}>
-          Matches list <FontAwesomeIcon icon={faAngleUp}/>
+          Matches <FontAwesomeIcon icon={faAngleUp}/>
+        </div>
+        <div>
+          TIP: You can click on a match to show it in relationship to other matches!
         </div>
         <div>
           <table className="tournament-table simple-table">
@@ -232,15 +272,15 @@ export default function App() {
             </thead>
             <tbody>
               {tournamentMatches.map((match) => (
-                <tr key={match.id}>
+                <tr key={match.id} onClick={() => { getMatchDetail(match.id); getRequiringMatch(match.playerRequiringResultId) }}>
                   <td>{match.name}</td>
                   <td>
-                    <inline className="text-blue-bold">{getPOMRName(match.players[0])}</inline>{/*
+                    <span className="text-blue-bold">{getPOMRName(match.players[0])}</span>{/*
                     */} vs {/*
-                    */}<inline className="text-blue-bold">{getPOMRName(match.players[1])}</inline>
+                    */}<span className="text-blue-bold">{getPOMRName(match.players[1])}</span>
                   </td>
                   <td>
-                    {match.start != null ? format(new Date(match.start)) :
+                    {match.start != null ? formatDate(match.start) :
                       <div className="text-center">-</div>}
                   </td>
                   <td>
@@ -257,8 +297,21 @@ export default function App() {
             </tbody>
           </table>
         </div>
+        {selectedMatch != null && !selectedMatch.IsEmpty && renderSelectedMatch()}
       </div>
     )
   }
-  
+
+  function renderSelectedMatch() {
+    return (
+      <div className="mt-5">
+        <div className="header2">Interactive match explorer</div>
+        <div className="columns-3">
+          <div>A</div>
+          <div>B</div>
+          <div>C</div>
+        </div>
+      </div>
+    );
+  }
 }
