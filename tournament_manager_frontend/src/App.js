@@ -366,7 +366,7 @@ export default function App() {
                 <td rowSpan={2}>
                   {matchRequiringSelectedMatch == null ?
                       <div className="match-info-empty"></div> :
-                      <div className="match-info font-bold" onClick={
+                      <div className="match-info font-bold clickable" onClick={
                         () => { getMatchDetail(matchRequiringSelectedMatch.id);
                           getRequiringMatchFromMATCH(matchRequiringSelectedMatch.id)}}>
                             <div>{matchRequiringSelectedMatch.name}</div>
