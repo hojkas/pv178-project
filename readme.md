@@ -7,7 +7,7 @@ It has two parts - API in asp.NET and frontend in React.
 The API has endpoints for all the CRUD operations needed to manage the tournament - to view and modify tournament itself, its players, matches played and players participating in the matches.
 
 * All the controllers in the API are **async**.
-* The API uses **database** (SQLite) to store the data.
+* The API uses **database** (SQLite) to store the data, the data are accessed using Entity Framework, also in **asynchronous** way.
 
 The React frontend only displays the data but doesn't modify them (to keep the scope of the project realistic).
 
